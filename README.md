@@ -1,9 +1,9 @@
-# KoopIt - AI-Verified Idea Marketplace
+# KoopLand - AI-Verified Idea Marketplace
 
 **Live Demo:** [https://koopland.vercel.app/](https://koopland.vercel.app/)
 
 ## Overview
-KoopIt is a decentralized marketplace for buying and selling vetted business ideas as NFTs. Every idea is analyzed and rated by AI before listing, ensuring quality for buyers. Cross-chain payments are powered by **SideShift.ai**, enabling seamless transactions across 200+ cryptocurrencies.
+KoopLand is a decentralized marketplace for buying and selling vetted business ideas as NFTs. Every idea is analyzed and rated by AI before listing, ensuring quality for buyers. Cross-chain payments are powered by **SideShift.ai**, enabling seamless transactions across 200+ cryptocurrencies.
 
 ## Core Features
 - **AI Verification**: Ideas are automatically rated for originality, use case value, and category relevance
@@ -98,7 +98,7 @@ SideShift's API enables seamless cross-chain token swaps with:
 - Competitive rates
 - Developer-friendly API
 
-This makes KoopIt truly borderless - anyone can sell ideas, anyone can buy, regardless of their preferred blockchain.
+This makes KoopLand truly borderless - anyone can sell ideas, anyone can buy, regardless of their preferred blockchain.
 
 ## Contributing
 Contributions welcome! Please open an issue or submit a PR.
