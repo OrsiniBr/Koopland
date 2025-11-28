@@ -22,11 +22,8 @@ export default function Home() {
             </h2>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
               Every idea is rated by AI for originality and value. Buy
-              seamlessly using any cryptocurrency through our sponsor{" "}
-              <span className="font-bold text-foreground text-xl">
-                SideShift
-              </span>{" "}
-              - the direct-to-wallet crypto exchange.
+              seamlessly using any cryptocurrency - the direct-to-wallet crypto
+              exchange.
             </p>
             <Link href="/marketplace">
               <Button
