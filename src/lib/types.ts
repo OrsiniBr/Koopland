@@ -16,6 +16,8 @@ export interface AIRating {
   categoryMatch: number;
 }
 
+export type Chain = "ethereum" | "polygon" | "arbitrum" | "optimism" | "sepolia";
+
 export interface Idea {
   id: string;
   title: string;
@@ -27,6 +29,8 @@ export interface Idea {
   sellerId: string;
   sellerName: string;
   sellerTwitter: string;
+  sellerWalletAddress: string;
+  preferredChain: Chain;
   sellerIdeasSold: number;
   salesCount: number;
   aiRating: AIRating;
@@ -39,5 +43,6 @@ export interface User {
   name: string;
   email: string;
   twitterUrl: string;
+  profilePicture?: string;
   createdAt: string;
 }

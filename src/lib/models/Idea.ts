@@ -1,5 +1,5 @@
 import { getDb } from '../db';
-import { Category, IdeaStatus, AIRating } from '../types';
+import { Category, IdeaStatus, AIRating, Chain } from '../types';
 
 export interface IdeaDocument {
   _id?: string;
@@ -11,6 +11,7 @@ export interface IdeaDocument {
   price: number;
   sellerId: string;
   sellerWalletAddress: string; // Wallet address from RainbowKit
+  preferredChain: Chain; // Preferred chain for receiving payments
   sellerName: string;
   sellerTwitter: string;
   sellerIdeasSold: number;
@@ -30,6 +31,7 @@ export class Idea {
     price: number;
     sellerId: string;
     sellerWalletAddress: string;
+    preferredChain: Chain;
     sellerName: string;
     sellerTwitter: string;
     aiRating: AIRating;
@@ -46,6 +48,7 @@ export class Idea {
       price: data.price,
       sellerId: data.sellerId,
       sellerWalletAddress: data.sellerWalletAddress,
+      preferredChain: data.preferredChain,
       sellerName: data.sellerName,
       sellerTwitter: data.sellerTwitter,
       sellerIdeasSold: 0,

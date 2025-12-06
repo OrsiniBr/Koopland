@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import { categories } from "@/lib/dummyData";
-import { Category } from "@/lib/types";
+import { Category, Chain } from "@/lib/types";
 import { Upload, X } from "lucide-react";
 
 const createIdeaSchema = z.object({
@@ -29,6 +29,7 @@ const createIdeaSchema = z.object({
     .number()
     .min(0.01, "Price must be greater than 0")
     .positive("Price must be positive"),
+  preferredChain: z.enum(["ethereum", "polygon", "arbitrum", "optimism", "sepolia"] as const),
   preview: z
     .string()
     .min(1, "Preview is required")
@@ -74,6 +75,7 @@ export default function CreateIdeaPage() {
     defaultValues: {
       price: 0,
       categories: [],
+      preferredChain: "ethereum",
     },
   });
 
@@ -221,6 +223,7 @@ export default function CreateIdeaPage() {
           fullContent: data.fullContent,
           price: data.price,
           sellerWalletAddress: address,
+          preferredChain: data.preferredChain,
           sellerName: user.name,
           sellerTwitter: user.twitterUrl,
         }),
@@ -391,6 +394,30 @@ export default function CreateIdeaPage() {
                 error={errors.price?.message}
                 placeholder="0.00"
               />
+
+              <div>
+                <label className="block text-sm font-medium mb-1.5 text-foreground">
+                  Preferred Payment Chain
+                </label>
+                <select
+                  {...register("preferredChain")}
+                  className="h-10 w-full px-3 rounded-md border border-lightgray bg-white text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tan focus-visible:ring-offset-2"
+                >
+                  <option value="ethereum">Ethereum</option>
+                  <option value="polygon">Polygon</option>
+                  <option value="arbitrum">Arbitrum</option>
+                  <option value="optimism">Optimism</option>
+                  <option value="sepolia">Sepolia (Testnet)</option>
+                </select>
+                {errors.preferredChain && (
+                  <p className="mt-1.5 text-sm text-destructive">
+                    {errors.preferredChain.message}
+                  </p>
+                )}
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  Select the blockchain network where you want to receive payments
+                </p>
+              </div>
             </div>
           </div>
 

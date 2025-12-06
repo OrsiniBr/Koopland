@@ -7,7 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, twitterUrl, password } = body;
+    const { name, email, twitterUrl, password, profilePicture } = body;
 
     // Validate required fields
     if (!name || !email || !twitterUrl || !password) {
@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
       email,
       twitterUrl,
       password,
+      profilePicture,
     });
 
     // Generate JWT token
@@ -66,6 +67,7 @@ export async function POST(request: NextRequest) {
           name: user.name,
           email: user.email,
           twitterUrl: user.twitterUrl,
+          profilePicture: user.profilePicture,
           createdAt: user.createdAt,
         },
         token,

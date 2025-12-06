@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Idea } from '@/lib/models/Idea';
 import { analyzeIdea } from '@/lib/services/openai';
-import { Category } from '@/lib/types';
+import { Category, Chain } from '@/lib/types';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
       fullContent,
       price,
       sellerWalletAddress,
+      preferredChain,
       sellerName,
       sellerTwitter,
     } = body;
@@ -92,6 +93,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate preferred chain
+    if (!preferredChain || !['ethereum', 'polygon', 'arbitrum', 'optimism', 'sepolia'].includes(preferredChain)) {
+      return NextResponse.json(
+        { error: 'Valid preferred chain is required' },
+        { status: 400 }
+      );
+    }
+
     // Analyze idea with OpenAI
     const aiRating = await analyzeIdea(title, preview, fullContent, categories);
 
@@ -105,6 +114,7 @@ export async function POST(request: NextRequest) {
       price,
       sellerId: user.userId,
       sellerWalletAddress,
+      preferredChain: preferredChain as Chain,
       sellerName: sellerName || 'Anonymous',
       sellerTwitter: sellerTwitter || '',
       aiRating: {
