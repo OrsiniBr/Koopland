@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { use } from "react";
+import { useRouter } from "next/navigation";
 import { ExternalLink, Check, Download } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CategoryBadge } from "@/components/CategoryBadge";
@@ -19,8 +21,9 @@ interface IdeaDetailPageProps {
 
 export default function IdeaDetailPage({ params }: IdeaDetailPageProps) {
   const { id } = use(params);
+  const router = useRouter();
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
-  const [selectedToken, setSelectedToken] = useState("BTC");
+  const [isProcessing, setIsProcessing] = useState(false);
   const [isPurchased, setIsPurchased] = useState(false);
   const [showFullContent, setShowFullContent] = useState(false);
 
@@ -51,17 +54,43 @@ export default function IdeaDetailPage({ params }: IdeaDetailPageProps) {
     setShowPurchaseModal(true);
   };
 
-  const handleConfirmPurchase = () => {
-    console.log("Processing payment via SideShift with", selectedToken);
-    // Mock purchase flow
-    setTimeout(() => {
-      setIsPurchased(true);
-      setShowFullContent(true);
-      setShowPurchaseModal(false);
-    }, 2000);
-  };
+  const handleConfirmPurchase = async () => {
+    setIsProcessing(true);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Please sign in to purchase ideas");
+        router.push("/login");
+        return;
+      }
 
-  const paymentTokens = ["BTC", "ETH", "USDC", "MATIC", "SOL", "AVAX"];
+      const response = await fetch("/api/payments/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ideaId: id,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result.error || "Failed to create checkout");
+        return;
+      }
+
+      // Redirect to SideShift payment page
+      window.location.href = result.paymentUrl;
+    } catch (error) {
+      console.error("Purchase error:", error);
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -170,18 +199,12 @@ export default function IdeaDetailPage({ params }: IdeaDetailPageProps) {
             {!isPurchased && (
               <div className="bg-lightgray rounded-lg p-6">
                 <h3 className="font-semibold text-foreground mb-2">
-                  Supported Payment Tokens
+                  Payment Information
                 </h3>
-                <div className="flex flex-wrap gap-2">
-                  {paymentTokens.map((token) => (
-                    <span
-                      key={token}
-                      className="px-3 py-1 bg-white rounded-full text-sm text-foreground"
-                    >
-                      {token}
-                    </span>
-                  ))}
-                </div>
+                <p className="text-sm text-muted-foreground">
+                  Pay with any supported cryptocurrency via SideShift Pay. 
+                  You'll be redirected to complete your payment securely.
+                </p>
               </div>
             )}
           </div>
@@ -235,37 +258,40 @@ export default function IdeaDetailPage({ params }: IdeaDetailPageProps) {
       <Modal
         isOpen={showPurchaseModal}
         onClose={() => setShowPurchaseModal(false)}
-        title="Select Payment Token"
+        title="Purchase Idea"
       >
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Choose your payment token. Payment will be processed via{" "}
-            <span className="font-semibold">SideShift</span>.
+            You will be redirected to SideShift Pay to complete your purchase. 
+            You can pay with any supported cryptocurrency.
           </p>
-          <select
-            value={selectedToken}
-            onChange={(e) => setSelectedToken(e.target.value)}
-            className="w-full h-10 px-3 rounded-md border border-lightgray bg-white text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tan focus-visible:ring-offset-2"
-          >
-            {paymentTokens.map((token) => (
-              <option key={token} value={token}>
-                {token}
-              </option>
-            ))}
-          </select>
-          <div className="flex gap-3">
+          <div className="bg-lightgray rounded-lg p-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-muted-foreground">Price:</span>
+              <span className="text-lg font-bold text-foreground">${idea.price}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Payment Chain:</span>
+              <span className="text-sm font-medium text-foreground capitalize">
+                {idea.preferredChain}
+              </span>
+            </div>
+          </div>
+          <div className="flex gap-2">
             <Button
               variant="outline"
               className="flex-1 border-lightgray"
               onClick={() => setShowPurchaseModal(false)}
+              disabled={isProcessing}
             >
               Cancel
             </Button>
             <Button
               className="flex-1 bg-tan hover:bg-tan/90 text-white"
               onClick={handleConfirmPurchase}
+              disabled={isProcessing}
             >
-              Proceed with SideShift
+              {isProcessing ? "Processing..." : "Proceed to Payment"}
             </Button>
           </div>
         </div>

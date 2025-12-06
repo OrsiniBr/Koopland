@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Idea } from '@/lib/models/Idea';
 import { analyzeIdea } from '@/lib/services/openai';
 import { Category, Chain } from '@/lib/types';
+import { calculateIdeaPrice } from '@/lib/utils/pricing';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
@@ -36,7 +37,6 @@ export async function POST(request: NextRequest) {
       categories,
       preview,
       fullContent,
-      price,
       sellerWalletAddress,
       preferredChain,
       sellerName,
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!title || !image || !categories || !preview || !fullContent || price === undefined) {
+    if (!title || !image || !categories || !preview || !fullContent) {
       return NextResponse.json(
         { error: 'All fields are required' },
         { status: 400 }
@@ -77,14 +77,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate price
-    if (price <= 0) {
-      return NextResponse.json(
-        { error: 'Price must be greater than 0' },
-        { status: 400 }
-      );
-    }
-
     // Validate wallet address
     if (!sellerWalletAddress) {
       return NextResponse.json(
@@ -103,6 +95,9 @@ export async function POST(request: NextRequest) {
 
     // Analyze idea with OpenAI
     const aiRating = await analyzeIdea(title, preview, fullContent, categories);
+
+    // Calculate price based on AI scores
+    const price = calculateIdeaPrice(aiRating.originality, aiRating.useCaseValue);
 
     // Create idea in database
     const idea = await Idea.create({

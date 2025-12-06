@@ -25,10 +25,6 @@ const createIdeaSchema = z.object({
     .array(z.enum(["DeFi", "AI", "SocialFi", "DAO", "Gaming", "NFTs", "Infrastructure", "Other"] as const))
     .min(1, "Select at least 1 category")
     .max(3, "Select maximum 3 categories"),
-  price: z
-    .number()
-    .min(0.01, "Price must be greater than 0")
-    .positive("Price must be positive"),
   preferredChain: z.enum(["ethereum", "polygon", "arbitrum", "optimism", "sepolia"] as const),
   preview: z
     .string()
@@ -73,7 +69,6 @@ export default function CreateIdeaPage() {
   } = useForm<CreateIdeaFormData>({
     resolver: zodResolver(createIdeaSchema),
     defaultValues: {
-      price: 0,
       categories: [],
       preferredChain: "ethereum",
     },
@@ -83,7 +78,6 @@ export default function CreateIdeaPage() {
   const fullContent = watch("fullContent");
   const title = watch("title");
   const image = watch("image");
-  const price = watch("price");
 
   const previewWordCount = preview
     ? preview
@@ -221,7 +215,6 @@ export default function CreateIdeaPage() {
           categories: data.categories,
           preview: data.preview,
           fullContent: data.fullContent,
-          price: data.price,
           sellerWalletAddress: address,
           preferredChain: data.preferredChain,
           sellerName: user.name,
@@ -386,14 +379,11 @@ export default function CreateIdeaPage() {
                 </p>
               </div>
 
-              <Input
-                label="Price in USD"
-                type="number"
-                step="0.01"
-                {...register("price", { valueAsNumber: true })}
-                error={errors.price?.message}
-                placeholder="0.00"
-              />
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-900">
+                  <span className="font-semibold">Automatic Pricing:</span> Your idea's price will be automatically calculated based on AI analysis scores. Prices range from $2 to $10 based on originality and use case value.
+                </p>
+              </div>
 
               <div>
                 <label className="block text-sm font-medium mb-1.5 text-foreground">
@@ -551,8 +541,7 @@ export default function CreateIdeaPage() {
             </p>
           </div>
           <div className="pt-4 border-t border-lightgray">
-            <p className="text-2xl font-bold text-foreground">${price || 0}</p>
-            <p className="text-sm text-muted-foreground">USD</p>
+            <p className="text-sm text-muted-foreground">Price will be calculated after AI analysis</p>
           </div>
         </div>
       </Modal>
