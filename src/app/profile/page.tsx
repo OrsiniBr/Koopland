@@ -165,7 +165,11 @@ export default function ProfilePage() {
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-3">
-                          <CategoryBadge category={idea.category} />
+                          <div className="flex flex-wrap gap-2">
+                            {idea.categories.map((cat) => (
+                              <CategoryBadge key={cat} category={cat} />
+                            ))}
+                          </div>
                           {getStatusBadge(idea.status)}
                         </div>
                         <h4 className="text-lg font-semibold text-foreground mb-2">
@@ -259,7 +263,11 @@ export default function ProfilePage() {
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-3">
-                            <CategoryBadge category={idea.category} />
+                            <div className="flex flex-wrap gap-2">
+                              {idea.categories.map((cat) => (
+                                <CategoryBadge key={cat} category={cat} />
+                              ))}
+                            </div>
                           </div>
                           <h4 className="text-lg font-semibold text-foreground mb-2">
                             {idea.title}

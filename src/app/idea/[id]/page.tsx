@@ -73,7 +73,11 @@ export default function IdeaDetailPage({ params }: IdeaDetailPageProps) {
           <div className="lg:col-span-2 space-y-6">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <CategoryBadge category={idea.category} />
+                <div className="flex flex-wrap gap-2">
+                  {idea.categories.map((cat) => (
+                    <CategoryBadge key={cat} category={cat} />
+                  ))}
+                </div>
                 <div className="flex items-center gap-1 bg-tan text-white px-2 py-0.5 rounded-full text-xs">
                   <Check className="h-3 w-3" />
                   <span>AI Verified</span>

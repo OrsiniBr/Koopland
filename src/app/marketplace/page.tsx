@@ -28,7 +28,9 @@ export default function MarketplacePage() {
 
     // Filter by category
     if (selectedCategory !== "All") {
-      filtered = filtered.filter((idea) => idea.category === selectedCategory);
+      filtered = filtered.filter((idea) =>
+        idea.categories.includes(selectedCategory)
+      );
     }
 
     // Filter by search query
@@ -38,7 +40,7 @@ export default function MarketplacePage() {
         (idea) =>
           idea.title.toLowerCase().includes(query) ||
           idea.preview.toLowerCase().includes(query) ||
-          idea.category.toLowerCase().includes(query)
+          idea.categories.some((cat) => cat.toLowerCase().includes(query))
       );
     }
 

@@ -4,7 +4,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "1",
     title: "DeFi Lending Pool with Dynamic Interest Rates",
-    category: "DeFi",
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
+    categories: ["DeFi"],
     preview:
       "A novel approach to DeFi lending that adjusts interest rates based on real-time market volatility and liquidity depth. Uses machine learning to predict optimal rates and automatically rebalances pools to maximize returns for lenders while maintaining competitive rates for borrowers.",
     fullContent:
@@ -26,7 +27,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "2",
     title: "AI-Powered NFT Curation Marketplace",
-    category: "NFTs",
+    categories: ["NFTs"],
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
     preview:
       "An intelligent NFT marketplace that uses AI to curate and recommend collections based on user preferences, rarity analysis, and market trends. The platform provides automated valuation and trend prediction to help collectors make informed decisions.",
     fullContent:
@@ -48,7 +50,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "3",
     title: "Decentralized Social Network with Token Rewards",
-    category: "SocialFi",
+    categories: ["SocialFi"],
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
     preview:
       "A social media platform where users earn tokens for creating quality content, engaging with posts, and building communities. Content creators can monetize directly through token rewards and NFT-based content ownership.",
     fullContent:
@@ -70,7 +73,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "4",
     title: "Cross-Chain Gaming Asset Marketplace",
-    category: "Gaming",
+    categories: ["Gaming"],
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
     preview:
       "A unified marketplace for gaming assets across multiple blockchains, allowing players to trade items, characters, and achievements regardless of the game's native chain. Includes interoperability protocols for seamless asset transfers.",
     fullContent:
@@ -92,7 +96,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "5",
     title: "DAO Governance Automation Platform",
-    category: "DAO",
+    categories: ["DAO"],
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
     preview:
       "An intelligent platform that automates DAO governance processes, including proposal creation, voting mechanisms, and execution. Uses AI to analyze proposals and predict outcomes before voting begins.",
     fullContent:
@@ -114,7 +119,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "6",
     title: "AI Model Marketplace for Developers",
-    category: "AI",
+    categories: ["AI"],
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
     preview:
       "A decentralized marketplace where developers can buy, sell, and license AI models. Includes model versioning, performance metrics, and automated testing to ensure quality before purchase.",
     fullContent:
@@ -136,7 +142,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "7",
     title: "Decentralized Cloud Storage Network",
-    category: "Infrastructure",
+    categories: ["Infrastructure"],
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
     preview:
       "A peer-to-peer cloud storage network that rewards users for sharing unused storage space. Files are encrypted, sharded, and distributed across the network for redundancy and security.",
     fullContent:
@@ -158,7 +165,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "8",
     title: "Yield Farming Aggregator with Risk Scoring",
-    category: "DeFi",
+    categories: ["DeFi"],
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
     preview:
       "An intelligent aggregator that finds the best yield farming opportunities across DeFi protocols while providing risk scores based on smart contract audits, TVL stability, and historical performance.",
     fullContent:
@@ -180,7 +188,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "9",
     title: "Blockchain-Based Supply Chain Verification",
-    category: "Infrastructure",
+    categories: ["Infrastructure"],
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
     preview:
       "A transparent supply chain platform that tracks products from origin to consumer using blockchain technology. Ensures authenticity, ethical sourcing, and provides consumers with complete product history.",
     fullContent:
@@ -202,7 +211,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "10",
     title: "Tokenized Real Estate Investment Platform",
-    category: "DeFi",
+    categories: ["DeFi"],
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
     preview:
       "A platform that tokenizes real estate properties, allowing fractional ownership and investment in properties worldwide. Includes automated rental distribution and property management features.",
     fullContent:
@@ -224,7 +234,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "11",
     title: "Decentralized Identity Verification System",
-    category: "Infrastructure",
+    categories: ["Infrastructure"],
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
     preview:
       "A self-sovereign identity system that allows users to control their digital identity and selectively share verified credentials. Uses zero-knowledge proofs to verify information without revealing sensitive data.",
     fullContent:
@@ -246,7 +257,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "12",
     title: "AI Content Moderation for Web3 Platforms",
-    category: "AI",
+    categories: ["AI"],
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
     preview:
       "An AI-powered content moderation system specifically designed for Web3 platforms. Uses machine learning to detect harmful content while preserving user privacy through on-chain verification.",
     fullContent:
@@ -268,7 +280,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "13",
     title: "Cross-Chain DEX Aggregator",
-    category: "DeFi",
+    categories: ["DeFi"],
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
     preview:
       "A decentralized exchange aggregator that finds the best swap rates across multiple chains and DEXs. Executes trades atomically across chains when beneficial, saving users time and money.",
     fullContent:
@@ -290,7 +303,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "14",
     title: "NFT Royalty Enforcement Protocol",
-    category: "NFTs",
+    categories: ["NFTs"],
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
     preview:
       "A protocol that ensures NFT creators receive royalties on secondary sales across all marketplaces. Uses smart contracts and marketplace integrations to automatically enforce royalty payments.",
     fullContent:
@@ -312,7 +326,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "15",
     title: "Decentralized Prediction Market Platform",
-    category: "Other",
+    categories: ["Other"],
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
     preview:
       "A prediction market where users can bet on real-world events and earn rewards for accurate predictions. Uses oracle networks for reliable event resolution and includes governance features for disputed outcomes.",
     fullContent:
@@ -334,7 +349,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "16",
     title: "Automated Portfolio Rebalancing for Crypto",
-    category: "DeFi",
+    categories: ["DeFi"],
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
     preview:
       "An intelligent portfolio management system that automatically rebalances crypto holdings based on user-defined strategies, market conditions, and risk tolerance. Includes tax optimization features.",
     fullContent:
@@ -356,7 +372,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "17",
     title: "Blockchain-Based Academic Credential Verification",
-    category: "Infrastructure",
+    categories: ["Infrastructure"],
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
     preview:
       "A platform where educational institutions can issue verifiable credentials on the blockchain. Employers can instantly verify degrees and certifications without contacting institutions directly.",
     fullContent:
@@ -378,7 +395,8 @@ export const dummyIdeas: Idea[] = [
   {
     id: "18",
     title: "Decentralized Music Streaming with Artist Ownership",
-    category: "Other",
+    categories: ["Other"],
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
     preview:
       "A music streaming platform where artists retain ownership of their music and earn directly from streams. Uses blockchain to track plays and distribute royalties automatically to all rights holders.",
     fullContent:

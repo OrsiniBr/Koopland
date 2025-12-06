@@ -19,7 +19,8 @@ export interface AIRating {
 export interface Idea {
   id: string;
   title: string;
-  category: Category;
+  image: string; // URL to the image
+  categories: Category[]; // Multiple categories (1-3)
   preview: string;
   fullContent: string;
   price: number;
