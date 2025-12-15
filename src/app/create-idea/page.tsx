@@ -51,7 +51,8 @@ const createIdeaSchema = z.object({
         .split(/\s+/)
         .filter((w) => w.length > 0);
       return words.length <= 150;
-    }, "Preview must be exactly 150 words"),
+    }, "Preview must be 150 words or fewer"),
+
   fullContent: z
     .string()
     .min(1, "Full content is required")
@@ -61,7 +62,7 @@ const createIdeaSchema = z.object({
         .split(/\s+/)
         .filter((w) => w.length > 0);
       return words.length <= 3000;
-    }, "Full content must be exactly 3000 words"),
+    }, "Full content must be 3000 words or fewer"),
 });
 
 type CreateIdeaFormData = z.infer<typeof createIdeaSchema>;
@@ -448,13 +449,13 @@ export default function CreateIdeaPage() {
             </h2>
             <div>
               <label className="block text-sm font-medium mb-1.5 text-foreground">
-                Preview Text (Exactly 150 words)
+                Preview Text (Up to 150 words)
               </label>
               <textarea
                 {...register("preview")}
                 rows={6}
                 className="w-full rounded-md border border-lightgray bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tan focus-visible:ring-offset-2"
-                placeholder="This is what buyers see before purchasing. Must be exactly 150 words."
+                placeholder="This is what buyers see before purchasing. Maximum 150 words."
               />
               <div className="flex items-center justify-between mt-2">
                 {errors.preview && (
@@ -464,7 +465,7 @@ export default function CreateIdeaPage() {
                 )}
                 <p
                   className={`text-sm ml-auto ${
-                    previewWordCount !== 150
+                    previewWordCount > 150
                       ? "text-destructive"
                       : "text-green-600"
                   }`}
@@ -482,13 +483,13 @@ export default function CreateIdeaPage() {
             </h2>
             <div>
               <label className="block text-sm font-medium mb-1.5 text-foreground">
-                Full Content (Exactly 3000 words)
+                Full Content (Up to 3000 words)
               </label>
               <textarea
                 {...register("fullContent")}
                 rows={20}
                 className="w-full rounded-md border border-lightgray bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tan focus-visible:ring-offset-2"
-                placeholder="This is revealed after purchase. Provide detailed information about your idea. Must be exactly 3000 words."
+                placeholder="This is revealed after purchase. Provide detailed information about your idea. Maximum 3000 words."
               />
               <div className="flex items-center justify-between mt-2">
                 {errors.fullContent && (
@@ -498,7 +499,7 @@ export default function CreateIdeaPage() {
                 )}
                 <p
                   className={`text-sm ml-auto ${
-                    fullContentWordCount !== 3000
+                    fullContentWordCount > 3000
                       ? "text-destructive"
                       : "text-green-600"
                   }`}

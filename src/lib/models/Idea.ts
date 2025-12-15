@@ -80,7 +80,9 @@ export class Idea {
   static async findLive(): Promise<IdeaDocument[]> {
     const db = await getDb();
     const ideasCollection = db.collection<IdeaDocument>('ideas');
-    return await ideasCollection.find({ status: 'live' }).toArray();
+    // For now, return all ideas. If you want to only show approved ideas later,
+    // change this back to { status: 'live' } or a more specific filter.
+    return await ideasCollection.find({}).toArray();
   }
 }
 
