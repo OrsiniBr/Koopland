@@ -14,18 +14,34 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { CategoryBadge } from "@/components/CategoryBadge";
-import { categories } from "@/lib/dummyData";
-import { Category, Chain } from "@/lib/types";
+import { categories, Category, Chain } from "@/lib/types";
 import { Upload, X } from "lucide-react";
 
 const createIdeaSchema = z.object({
   title: z.string().min(1, "Title is required"),
   image: z.string().url("Valid image URL is required"),
   categories: z
-    .array(z.enum(["DeFi", "AI", "SocialFi", "DAO", "Gaming", "NFTs", "Infrastructure", "Other"] as const))
+    .array(
+      z.enum([
+        "DeFi",
+        "AI",
+        "SocialFi",
+        "DAO",
+        "Gaming",
+        "NFTs",
+        "Infrastructure",
+        "Other",
+      ] as const)
+    )
     .min(1, "Select at least 1 category")
     .max(3, "Select maximum 3 categories"),
-  preferredChain: z.enum(["ethereum", "polygon", "arbitrum", "optimism", "sepolia"] as const),
+  preferredChain: z.enum([
+    "ethereum",
+    "polygon",
+    "arbitrum",
+    "optimism",
+    "sepolia",
+  ] as const),
   preview: z
     .string()
     .min(1, "Preview is required")
@@ -34,7 +50,7 @@ const createIdeaSchema = z.object({
         .trim()
         .split(/\s+/)
         .filter((w) => w.length > 0);
-      return words.length === 150;
+      return words.length <= 150;
     }, "Preview must be exactly 150 words"),
   fullContent: z
     .string()
@@ -44,7 +60,7 @@ const createIdeaSchema = z.object({
         .trim()
         .split(/\s+/)
         .filter((w) => w.length > 0);
-      return words.length === 3000;
+      return words.length <= 3000;
     }, "Full content must be exactly 3000 words"),
 });
 
@@ -98,7 +114,7 @@ export default function CreateIdeaPage() {
       : selectedCategories.length < 3
       ? [...selectedCategories, category]
       : selectedCategories;
-    
+
     setSelectedCategories(newCategories);
     setValue("categories", newCategories as any);
   };
@@ -108,15 +124,15 @@ export default function CreateIdeaPage() {
     if (!file) return;
 
     // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file');
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
       return;
     }
 
     // Validate file size (max 10MB)
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
-      toast.error('Image size must be less than 10MB');
+      toast.error("Image size must be less than 10MB");
       return;
     }
 
@@ -139,10 +155,10 @@ export default function CreateIdeaPage() {
       }
 
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
-      const response = await fetch('/api/upload/image', {
-        method: 'POST',
+      const response = await fetch("/api/upload/image", {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -152,18 +168,18 @@ export default function CreateIdeaPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        toast.error(result.error || 'Failed to upload image');
+        toast.error(result.error || "Failed to upload image");
         setImageFile(null);
         setImagePreview(null);
         return;
       }
 
       // Set the uploaded image URL in the form
-      setValue('image', result.url, { shouldValidate: true });
-      toast.success('Image uploaded successfully');
+      setValue("image", result.url, { shouldValidate: true });
+      toast.success("Image uploaded successfully");
     } catch (error) {
-      console.error('Image upload error:', error);
-      toast.error('Failed to upload image. Please try again.');
+      console.error("Image upload error:", error);
+      toast.error("Failed to upload image. Please try again.");
       setImageFile(null);
       setImagePreview(null);
     } finally {
@@ -174,7 +190,7 @@ export default function CreateIdeaPage() {
   const removeImage = () => {
     setImageFile(null);
     setImagePreview(null);
-    setValue('image', '');
+    setValue("image", "");
   };
 
   const onSubmit = async (data: CreateIdeaFormData) => {
@@ -229,7 +245,9 @@ export default function CreateIdeaPage() {
         return;
       }
 
-      toast.success("Idea submitted successfully! AI is reviewing your submission...");
+      toast.success(
+        "Idea submitted successfully! AI is reviewing your submission..."
+      );
       router.push("/marketplace");
     } catch (error) {
       console.error("Submit idea error:", error);
@@ -302,13 +320,21 @@ export default function CreateIdeaPage() {
                       htmlFor="image-upload"
                       className={`flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
                         isUploadingImage
-                          ? 'border-gray-300 bg-gray-50 cursor-not-allowed'
-                          : 'border-lightgray hover:border-tan hover:bg-lightgray/50'
+                          ? "border-gray-300 bg-gray-50 cursor-not-allowed"
+                          : "border-lightgray hover:border-tan hover:bg-lightgray/50"
                       }`}
                     >
-                      <Upload className={`h-10 w-10 mb-2 ${isUploadingImage ? 'text-gray-400' : 'text-muted-foreground'}`} />
+                      <Upload
+                        className={`h-10 w-10 mb-2 ${
+                          isUploadingImage
+                            ? "text-gray-400"
+                            : "text-muted-foreground"
+                        }`}
+                      />
                       <p className="text-sm text-muted-foreground mb-1">
-                        {isUploadingImage ? 'Uploading...' : 'Click to upload or drag and drop'}
+                        {isUploadingImage
+                          ? "Uploading..."
+                          : "Click to upload or drag and drop"}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         PNG, JPG, GIF up to 10MB
@@ -381,7 +407,10 @@ export default function CreateIdeaPage() {
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-sm text-blue-900">
-                  <span className="font-semibold">Automatic Pricing:</span> Your idea's price will be automatically calculated based on AI analysis scores. Prices range from $2 to $10 based on originality and use case value.
+                  <span className="font-semibold">Automatic Pricing:</span> Your
+                  idea's price will be automatically calculated based on AI
+                  analysis scores. Prices range from $2 to $10 based on
+                  originality and use case value.
                 </p>
               </div>
 
@@ -405,7 +434,8 @@ export default function CreateIdeaPage() {
                   </p>
                 )}
                 <p className="mt-1.5 text-xs text-muted-foreground">
-                  Select the blockchain network where you want to receive payments
+                  Select the blockchain network where you want to receive
+                  payments
                 </p>
               </div>
             </div>
@@ -541,7 +571,9 @@ export default function CreateIdeaPage() {
             </p>
           </div>
           <div className="pt-4 border-t border-lightgray">
-            <p className="text-sm text-muted-foreground">Price will be calculated after AI analysis</p>
+            <p className="text-sm text-muted-foreground">
+              Price will be calculated after AI analysis
+            </p>
           </div>
         </div>
       </Modal>

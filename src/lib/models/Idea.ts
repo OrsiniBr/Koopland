@@ -54,7 +54,7 @@ export class Idea {
       sellerIdeasSold: 0,
       salesCount: 0,
       aiRating: data.aiRating,
-      status: 'pending',
+      status: 'live',
       createdAt: new Date(),
     };
 
