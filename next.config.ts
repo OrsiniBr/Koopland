@@ -9,17 +9,7 @@ const nextConfig: NextConfig = {
     "@walletconnect/universal-provider",
   ],
 
-  webpack: (config) => {
-    // Prevent Node-only modules from being bundled on the client
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-      net: false,
-      tls: false,
-      worker_threads: false,
-    };
-    return config;
-  },
+
 };
 
 export default nextConfig;
