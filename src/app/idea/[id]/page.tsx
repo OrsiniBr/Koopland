@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { use } from "react";
 import { useRouter } from "next/navigation";
 import { ExternalLink, Check, Download } from "lucide-react";
@@ -12,8 +12,7 @@ import { CategoryBadge } from "@/components/CategoryBadge";
 import { RatingDisplay } from "@/components/RatingDisplay";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
-import { dummyIdeas } from "@/lib/dummyData";
-import { Idea } from "@/lib/types";
+import type { Idea } from "@/lib/types";
 
 interface IdeaDetailPageProps {
   params: Promise<{ id: string }>;
@@ -22,33 +21,32 @@ interface IdeaDetailPageProps {
 export default function IdeaDetailPage({ params }: IdeaDetailPageProps) {
   const { id } = use(params);
   const router = useRouter();
+  const [idea, setIdea] = useState<Idea | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPurchased, setIsPurchased] = useState(false);
   const [showFullContent, setShowFullContent] = useState(false);
 
-  const idea = dummyIdeas.find((i) => i.id === id);
+  useEffect(() => {
+    const fetchIdea = async () => {
+      try {
+        const res = await fetch(`/api/ideas/${id}`);
+        const json = await res.json();
+        if (!res.ok) {
+          throw new Error(json.error || "Failed to load idea");
+        }
+        setIdea(json.idea);
+      } catch (err: any) {
+        setError(err.message || "Failed to load idea");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  if (!idea) {
-    return (
-      <div className="min-h-screen bg-white flex flex-col">
-        <Header />
-        <main className="grow flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-foreground mb-4">
-              Idea Not Found
-            </h1>
-            <Link href="/marketplace">
-              <Button className="bg-tan hover:bg-tan/90 text-white">
-                Back to Marketplace
-              </Button>
-            </Link>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
+    fetchIdea();
+  }, [id]);
 
   const handlePurchase = () => {
     setShowPurchaseModal(true);
@@ -91,6 +89,78 @@ export default function IdeaDetailPage({ params }: IdeaDetailPageProps) {
       setIsProcessing(false);
     }
   };
+
+  const handleDownloadCsv = () => {
+    if (!idea) return;
+
+    const rows = [
+      ["Title", idea.title],
+      ["Preview", idea.preview],
+      ["Full Content", idea.fullContent],
+      ["Categories", idea.categories.join(", ")],
+      ["Price (USD)", idea.price.toString()],
+    ];
+
+    const csvContent =
+      rows
+        .map((row) =>
+          row
+            .map((value) => {
+              const safe = String(value).replace(/"/g, '""');
+              return `"${safe}"`;
+            })
+            .join(",")
+        )
+        .join("\n") + "\n";
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `idea-${idea.id}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    toast.success(
+      "CSV downloaded. Keep it safe – if you lose it, you'll need to repurchase the idea."
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white flex flex-col">
+        <Header />
+        <main className="grow flex items-center justify-center">
+          <p className="text-sm text-muted-foreground">Loading idea...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !idea) {
+    return (
+      <div className="min-h-screen bg-white flex flex-col">
+        <Header />
+        <main className="grow flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-foreground mb-4">
+              {error || "Idea Not Found"}
+            </h1>
+            <Link href="/marketplace">
+              <Button className="bg-tan hover:bg-tan/90 text-white">
+                Back to Marketplace
+              </Button>
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -148,25 +218,34 @@ export default function IdeaDetailPage({ params }: IdeaDetailPageProps) {
             </div>
 
             {/* Price and Purchase */}
-            <div className="bg-white border border-lightgray rounded-lg p-6">
-              <div className="mb-4">
+            <div className="bg-white border border-lightgray rounded-lg p-6 space-y-4">
+              <div>
                 <p className="text-sm text-muted-foreground mb-1">Price</p>
                 <p className="text-4xl font-bold text-foreground">
                   ${idea.price}
                 </p>
                 <p className="text-sm text-muted-foreground">USD</p>
               </div>
-              <Button
-                onClick={handlePurchase}
-                className="w-full bg-tan hover:bg-tan/90 text-white"
-                disabled={isPurchased}
-              >
-                {isPurchased ? "Already Purchased" : "Buy Idea NFT"}
-              </Button>
+              <div className="space-y-2">
+                <Button
+                  onClick={handlePurchase}
+                  className="w-full bg-tan hover:bg-tan/90 text-white"
+                  disabled={isPurchased}
+                >
+                  {isPurchased ? "Already Purchased" : "Pay with SideShift"}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full border-dashed border-lightgray text-muted-foreground cursor-not-allowed"
+                  disabled
+                >
+                  Pay with Connected Wallet (coming soon)
+                </Button>
+              </div>
               {!isPurchased && (
-                <p className="mt-3 text-sm text-muted-foreground text-center">
-                  Pay with any crypto via{" "}
-                  <span className="font-semibold">SideShift</span>
+                <p className="mt-1 text-xs text-muted-foreground text-center">
+                  You do not need to connect a wallet if you plan to pay with
+                  SideShift.
                 </p>
               )}
             </div>
@@ -202,7 +281,7 @@ export default function IdeaDetailPage({ params }: IdeaDetailPageProps) {
                   Payment Information
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Pay with any supported cryptocurrency via SideShift Pay. 
+                  Pay with any supported cryptocurrency via SideShift Pay.
                   You'll be redirected to complete your payment securely.
                 </p>
               </div>
@@ -237,10 +316,18 @@ export default function IdeaDetailPage({ params }: IdeaDetailPageProps) {
                   <p className="text-sm text-muted-foreground mb-4 whitespace-pre-line">
                     {idea.fullContent}
                   </p>
-                  <Button variant="outline" className="w-full border-lightgray">
+                  <Button
+                    variant="outline"
+                    className="w-full border-lightgray"
+                    onClick={handleDownloadCsv}
+                  >
                     <Download className="h-4 w-4 mr-2" />
-                    Download
+                    Download CSV
                   </Button>
+                  <p className="mt-2 text-xs text-muted-foreground text-center">
+                    Keep your CSV safe. If you lose it, you&apos;ll need to
+                    purchase the idea again to regain access.
+                  </p>
                 </>
               )}
 
@@ -262,16 +349,20 @@ export default function IdeaDetailPage({ params }: IdeaDetailPageProps) {
       >
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            You will be redirected to SideShift Pay to complete your purchase. 
+            You will be redirected to SideShift Pay to complete your purchase.
             You can pay with any supported cryptocurrency.
           </p>
           <div className="bg-lightgray rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-muted-foreground">Price:</span>
-              <span className="text-lg font-bold text-foreground">${idea.price}</span>
+              <span className="text-lg font-bold text-foreground">
+                ${idea.price}
+              </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Payment Chain:</span>
+              <span className="text-sm text-muted-foreground">
+                Payment Chain:
+              </span>
               <span className="text-sm font-medium text-foreground capitalize">
                 {idea.preferredChain}
               </span>

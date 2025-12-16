@@ -1,4 +1,5 @@
 import { getDb } from '../db';
+import { ObjectId } from 'mongodb';
 import { Category, IdeaStatus, AIRating, Chain } from '../types';
 
 export interface IdeaDocument {
@@ -54,7 +55,7 @@ export class Idea {
       sellerIdeasSold: 0,
       salesCount: 0,
       aiRating: data.aiRating,
-      status: 'pending',
+      status: 'live',
       createdAt: new Date(),
     };
 
@@ -69,6 +70,7 @@ export class Idea {
     const db = await getDb();
     const ideasCollection = db.collection<IdeaDocument>('ideas');
     return await ideasCollection.findOne({ _id: id });
+    
   }
 
   static async findBySellerId(sellerId: string): Promise<IdeaDocument[]> {
@@ -80,7 +82,9 @@ export class Idea {
   static async findLive(): Promise<IdeaDocument[]> {
     const db = await getDb();
     const ideasCollection = db.collection<IdeaDocument>('ideas');
-    return await ideasCollection.find({ status: 'live' }).toArray();
+    // For now, return all ideas. If you want to only show approved ideas later,
+    // change this back to { status: 'live' } or a more specific filter.
+    return await ideasCollection.find({}).toArray();
   }
 }
 
