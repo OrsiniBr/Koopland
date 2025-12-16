@@ -1,4 +1,5 @@
 import { getDb } from '../db';
+import { ObjectId } from 'mongodb';
 import { Category, IdeaStatus, AIRating, Chain } from '../types';
 
 export interface IdeaDocument {
@@ -69,6 +70,7 @@ export class Idea {
     const db = await getDb();
     const ideasCollection = db.collection<IdeaDocument>('ideas');
     return await ideasCollection.findOne({ _id: id });
+    
   }
 
   static async findBySellerId(sellerId: string): Promise<IdeaDocument[]> {
