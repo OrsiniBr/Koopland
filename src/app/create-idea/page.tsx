@@ -16,6 +16,8 @@ import { Modal } from "@/components/ui/modal";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import { categories, Category, Chain } from "@/lib/types";
 import { Upload, X } from "lucide-react";
+import { useMint } from "@/hooks/useIdeaNFT";
+import { uploadToPinata, getPinataUrl } from "@/lib/pinata";
 
 const createIdeaSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -74,8 +76,11 @@ export default function CreateIdeaPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [ipfsHash, setIpfsHash] = useState<string | null>(null);
+  const [isMintingNFT, setIsMintingNFT] = useState(false);
   const router = useRouter();
   const { address, isConnected } = useAccount();
+  const mint = useMint();
 
   const {
     register,
@@ -100,13 +105,13 @@ export default function CreateIdeaPage() {
     ? preview
         .trim()
         .split(/\s+/)
-        .filter((w) => w.length > 0).length
+        .filter((w: string) => w.length > 0).length
     : 0;
   const fullContentWordCount = fullContent
     ? fullContent
         .trim()
         .split(/\s+/)
-        .filter((w) => w.length > 0).length
+        .filter((w: string) => w.length > 0).length
     : 0;
 
   const toggleCategory = (category: Category) => {
@@ -146,41 +151,21 @@ export default function CreateIdeaPage() {
     };
     reader.readAsDataURL(file);
 
-    // Upload to Cloudinary
+    // Upload to IPFS via Pinata
     setIsUploadingImage(true);
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        toast.error("Please sign in first");
-        return;
-      }
+      // Upload to Pinata
+      const ipfsHashResult = await uploadToPinata(file);
+      const ipfsUrl = getPinataUrl(ipfsHashResult);
 
-      const formData = new FormData();
-      formData.append("file", file);
+      setIpfsHash(ipfsHashResult);
 
-      const response = await fetch("/api/upload/image", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        toast.error(result.error || "Failed to upload image");
-        setImageFile(null);
-        setImagePreview(null);
-        return;
-      }
-
-      // Set the uploaded image URL in the form
-      setValue("image", result.url, { shouldValidate: true });
-      toast.success("Image uploaded successfully");
+      // Set the IPFS URL in the form
+      setValue("image", ipfsUrl, { shouldValidate: true });
+      toast.success("Image uploaded to IPFS successfully");
     } catch (error) {
-      console.error("Image upload error:", error);
-      toast.error("Failed to upload image. Please try again.");
+      console.error("IPFS upload error:", error);
+      toast.error("Failed to upload image to IPFS. Please try again.");
       setImageFile(null);
       setImagePreview(null);
     } finally {
@@ -191,6 +176,7 @@ export default function CreateIdeaPage() {
   const removeImage = () => {
     setImageFile(null);
     setImagePreview(null);
+    setIpfsHash(null);
     setValue("image", "");
   };
 
@@ -220,6 +206,7 @@ export default function CreateIdeaPage() {
 
     setIsSubmitting(true);
     try {
+      // First, create the idea in the database
       const response = await fetch("/api/ideas/create", {
         method: "POST",
         headers: {
@@ -246,6 +233,22 @@ export default function CreateIdeaPage() {
         return;
       }
 
+      // Now mint the NFT if we have an IPFS hash
+      if (ipfsHash) {
+        setIsMintingNFT(true);
+        try {
+          await mint(data.title, ipfsHash);
+          toast.success("Idea NFT minted successfully!");
+        } catch (mintError) {
+          console.error("NFT minting error:", mintError);
+          toast.error(
+            "Idea created but NFT minting failed. You can mint it later."
+          );
+        } finally {
+          setIsMintingNFT(false);
+        }
+      }
+
       toast.success(
         "Idea submitted successfully! AI is reviewing your submission..."
       );
@@ -268,7 +271,7 @@ export default function CreateIdeaPage() {
             Create New Idea
           </h1>
           <p className="text-muted-foreground">
-            Submit your idea for AI verification and NFT minting
+            Submit your idea for AI verification and automatic NFT minting
           </p>
         </div>
 
@@ -365,8 +368,9 @@ export default function CreateIdeaPage() {
                     {errors.image.message}
                   </p>
                 )}
-                <p className="mt-1.5 text-xs text-muted-foreground">
-                  Upload an image that represents your idea (max 10MB)
+                <p className="text-sm text-muted-foreground">
+                  Upload an image that represents your idea (max 10MB). Will be
+                  stored on IPFS for NFT metadata.
                 </p>
               </div>
 
@@ -514,8 +518,9 @@ export default function CreateIdeaPage() {
           <div className="bg-lightgray rounded-lg p-4">
             <p className="text-sm text-foreground">
               <span className="font-semibold">Note:</span> Your idea will be
-              analyzed by AI and minted as an NFT after verification. Make sure
-              your preview accurately represents your full content.
+              analyzed by AI and automatically minted as an NFT after
+              verification. The image will be stored on IPFS and used as the NFT
+              metadata.
             </p>
           </div>
 
@@ -533,9 +538,13 @@ export default function CreateIdeaPage() {
             <Button
               type="submit"
               className="flex-1 bg-tan hover:bg-tan/90 text-white"
-              disabled={!isConnected || isSubmitting}
+              disabled={!isConnected || isSubmitting || isMintingNFT}
             >
-              {isSubmitting ? "Submitting..." : "Submit for AI Review"}
+              {isSubmitting
+                ? "Submitting..."
+                : isMintingNFT
+                ? "Minting NFT..."
+                : "Submit for AI Review & NFT Mint"}
             </Button>
           </div>
         </form>

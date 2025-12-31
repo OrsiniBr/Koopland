@@ -1,4 +1,4 @@
-import { IDEA_NFT_ABI } from "../../contracts/abi";
+import { IDEA_NFT_ABI } from "../hooks/abi";
 import React, { useCallback } from "react";
 import { toast } from "sonner";
 import {
@@ -8,14 +8,14 @@ import {
   useWriteContract,
 } from "wagmi";
 
-export const useStake = () => {
+export const useMint = () => {
   const { address } = useAccount();
   const publicClient = usePublicClient();
-  const walletClient = useWalletClient();
+  const { data: walletClient } = useWalletClient();
   const { writeContractAsync } = useWriteContract();
 
   return useCallback(
-    async (title: string, imageIPFS : string) => {
+    async (title: string, imageIPFS: string) => {
       if (!address || !walletClient) {
         toast.error("Not Connected", {
           description: "please connect wallet",
@@ -23,7 +23,7 @@ export const useStake = () => {
         return;
       }
 
-      const contractAddress = process.env.NEXT_IDEA_NFT_ADDRESS;
+      const contractAddress = process.env.NEXT_PUBLIC_IDEA_NFT_ADDRESS;
 
       if (!contractAddress) {
         toast.error("Contract address not set");
@@ -36,36 +36,47 @@ export const useStake = () => {
       }
 
       try {
+        toast.info("Minting NFT...", {
+          description: "Please confirm the transaction in your wallet",
+        });
 
-        // Stake tokens
-        const mintNFTHash = await writeContractAsync({
+        // Mint NFT
+        const mintTxHash = await writeContractAsync({
           address: contractAddress as `0x${string}`,
           abi: IDEA_NFT_ABI,
           functionName: "mint",
           args: [title, imageIPFS],
         });
 
-        console.log("Stake txHash: ", mintNFTHash);
+        console.log("Mint txHash: ", mintTxHash);
 
-        // Wait for stake transaction
-        const mintNFTHashReciept = await publicClient.waitForTransactionReceipt({
-          hash: mintNFTHash,
+        toast.info("Transaction submitted", {
+          description: "Waiting for confirmation...",
         });
 
-        if (mintNFTHashReciept.status === "success") {
-          toast.success("minting successful", {
-            description: "You have successfully minted your Idea NFT",
+        // Wait for transaction receipt
+        const mintReceipt = await publicClient.waitForTransactionReceipt({
+          hash: mintTxHash,
+        });
+
+        if (mintReceipt.status === "success") {
+          toast.success("NFT minted successfully!", {
+            description:
+              "Your idea NFT has been created and minted to your wallet",
           });
+          return mintReceipt;
         } else {
-          toast.error("minting failed", {
-            description: "minting transaction failed",
+          toast.error("Minting failed", {
+            description: "Transaction was not successful",
           });
+          throw new Error("Transaction failed");
         }
       } catch (error) {
-        console.error("minting error:", error);
+        console.error("Minting error:", error);
         toast.error("Transaction failed", {
-          description: "Something went wrong during minting",
+          description: "Something went wrong during minting. Please try again.",
         });
+        throw error;
       }
     },
     [address, walletClient, publicClient, writeContractAsync]

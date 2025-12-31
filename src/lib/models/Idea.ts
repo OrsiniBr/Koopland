@@ -69,7 +69,9 @@ export class Idea {
   static async findById(id: string): Promise<IdeaDocument | null> {
     const db = await getDb();
     const ideasCollection = db.collection<IdeaDocument>("ideas");
-    return await ideasCollection.findOne({ _id: new ObjectId(id) });
+    return (await ideasCollection.findOne({
+      _id: new ObjectId(id),
+    })) as Promise<IdeaDocument | null>;
   }
 
   static async findBySellerId(sellerId: string): Promise<IdeaDocument[]> {

@@ -28,6 +28,7 @@ contract IdeaMarketplaceNFT is ERC721 {
         });
         
         _safeMint(msg.sender, tokenId);
+        tokenURI(tokenId);
         return tokenId;
     }
     
@@ -44,7 +45,7 @@ contract IdeaMarketplaceNFT is ERC721 {
                     abi.encodePacked(
                         '{"name": "', metadata.title, '",',
                         '"symbol": "', symbol, '",',
-                        '"description": "Idea NFT from Marketplace",',
+                        '"description": "Idea NFT from Koopland Marketplace",',
                         '"image": "', metadata.imageIPFS, '",',
                         '"attributes": [',
                             '{"trait_type": "Token ID", "value": "', Strings.toString(tokenId), '"}',
