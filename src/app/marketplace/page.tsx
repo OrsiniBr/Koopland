@@ -47,12 +47,13 @@ export default function MarketplacePage() {
   const filteredAndSortedIdeas = useMemo(() => {
     let filtered = [...ideas];
 
-    // Filter by category
+    // Filter by category - only apply if NOT "All"
     if (selectedCategory !== "All") {
       filtered = filtered.filter((idea) =>
         idea.categories.includes(selectedCategory)
       );
     }
+    // When selectedCategory is "All", no category filter is applied - show all ideas
 
     // Filter by search query
     if (searchQuery) {
@@ -92,7 +93,7 @@ export default function MarketplacePage() {
     }
 
     return filtered;
-  }, [searchQuery, selectedCategory, sortBy]);
+  }, [ideas, searchQuery, selectedCategory, sortBy]);
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -195,6 +196,5 @@ export default function MarketplacePage() {
 
       <Footer />
     </div>
-   
   );
 }
