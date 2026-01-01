@@ -28,7 +28,7 @@ Traditional marketplaces force users into a single payment currency. Sellers wan
 ```
 Seller wants payment in USDC → Buyer pays with BTC
     ↓
-SideShift converts BTC → USDC instantly
+SideShift converts BTC → USDC instantly (suspended)
     ↓
 Seller receives USDC, Buyer receives idea NFT
 ```
