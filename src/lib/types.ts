@@ -16,7 +16,12 @@ export interface AIRating {
   categoryMatch: number;
 }
 
-export type Chain = "ethereum" | "polygon" | "arbitrum" | "optimism" | "sepolia";
+export type Chain =
+  | "ethereum"
+  | "polygon"
+  | "arbitrum"
+  | "optimism"
+  | "sepolia";
 
 export interface Idea {
   id: string;
@@ -46,3 +51,15 @@ export interface User {
   profilePicture?: string;
   createdAt: string;
 }
+
+// Shared category list
+export const categories: Category[] = [
+  "DeFi",
+  "AI",
+  "SocialFi",
+  "DAO",
+  "Gaming",
+  "NFTs",
+  "Infrastructure",
+  "Other",
+];
